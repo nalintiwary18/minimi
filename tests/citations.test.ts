@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { linkCitations } from "../src/lib/citations";
+import { linkCitations, citationIds } from "../src/lib/citations";
 const sources = [
   {
     id: "S1",
@@ -10,6 +10,18 @@ const sources = [
   },
 ];
 describe("provider citation formats", () => {
+  it("expands Gemini's grouped citations while refusing unknown IDs", () => {
+    expect(linkCitations("Claim [S1, S99].", sources)).toBe(
+      "Claim [S1](#source-S1) [unverified citation].",
+    );
+  });
+  it("extracts grouped and full-width IDs for the evaluation audit", () => {
+    expect(citationIds("Claim [S1, S3]. More【S4】.")).toEqual([
+      "S1",
+      "S3",
+      "S4",
+    ]);
+  });
   it("links normal and full-width brackets from live model responses", () => {
     expect(linkCitations("Database [S1]. Homepage【S1】.", sources)).toBe(
       "Database [S1](#source-S1). Homepage[S1](#source-S1).",

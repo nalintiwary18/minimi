@@ -36,7 +36,13 @@ export async function waitForProvider<T>(
       return await operation();
     } catch (error) {
       const delay = cooldownMs(error);
-      if (!isRateLimit(error) || attempt >= 2 || delay > 30000) throw error;
+      const unavailable = (error as { status?: number })?.status === 503;
+      if (
+        (!isRateLimit(error) && !unavailable) ||
+        attempt >= (unavailable ? 1 : 2) ||
+        delay > 30000
+      )
+        throw error;
       onWait(Math.ceil(delay / 1000));
       await new Promise<void>((resolve, reject) => {
         const aborted = () => {
@@ -58,6 +64,8 @@ export function responseFailure(error: unknown, provider = "Groq") {
   if (isRateLimit(error))
     return `${provider}'s usage limit was reached. Try again when the provider quota is available. Your question is saved.`;
   const value = error as { status?: number; message?: string };
+  if (value?.status === 503)
+    return `${provider} is temporarily unavailable. Please try again shortly. Your question is saved.`;
   if (value?.status === 401 || value?.status === 403)
     return `The model provider rejected access. Check the ${provider} key. Your question is saved.`;
   if (value?.status === 402)

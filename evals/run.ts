@@ -5,6 +5,7 @@ import { runAgent } from "../src/lib/agent/graph";
 import { cases, NOW } from "./dataset";
 import type { Turn } from "../src/lib/types";
 import { modelSettings, required } from "../src/lib/server/config";
+import { citationIds } from "../src/lib/citations";
 
 const selected = process.argv
   .find((arg) => arg.startsWith("--case="))
@@ -91,9 +92,7 @@ try {
           pass:
             new RegExp(a.pattern, "i").test(normalizedAnswer) !== !!a.absent,
         }));
-      const ids = [...result.answer.matchAll(/(?:\[|【)(S\d+)(?:\]|】)/g)].map(
-        (m) => m[1],
-      );
+      const ids = citationIds(result.answer);
       checks.push({
         dimension: "evidence",
         name: "citation IDs exist and searched answers cite evidence",

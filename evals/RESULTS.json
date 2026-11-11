@@ -1,9 +1,10 @@
 {
   "datasetVersion": 2,
-  "ranAt": "2026-11-11T13:38:23.149Z",
+  "ranAt": "2026-11-11T14:42:13.910Z",
   "clock": "2026-11-11T10:00:00Z",
-  "model": "openai/gpt-oss-120b",
-  "mode": "real Groq, recorded web, real local PostgreSQL",
+  "model": "gemini-3.5-flash-lite",
+  "provider": "gemini",
+  "mode": "real Gemini, recorded web, real local PostgreSQL",
   "completed": 8,
   "count": 8,
   "scores": {
@@ -25,17 +26,17 @@
     }
   },
   "latencyMs": {
-    "firstTokenP50": 8004,
-    "firstTokenP95": 28900,
-    "totalP50": 8006,
-    "totalP95": 28904
+    "firstTokenP50": 1595,
+    "firstTokenP95": 38255,
+    "totalP50": 1597,
+    "totalP95": 38274
   },
   "results": [
     {
       "id": "dated-recall",
       "completed": true,
-      "firstTokenMs": 2021.3229000000001,
-      "totalMs": 2033.7416000000003,
+      "firstTokenMs": 186.51550000000134,
+      "totalMs": 200.82130000000143,
       "checks": [
         {
           "dimension": "recall",
@@ -66,17 +67,18 @@
         "rejectedFacts": [],
         "gaps": [],
         "timingsMs": {
-          "retrieval": 182.4459999999999,
-          "firstToken": 2014.7897999999996,
-          "total": 2026.7285000000002
+          "retrieval": 113.21659999999974,
+          "planning": 0.2304999999996653,
+          "firstToken": 181.57150000000001,
+          "total": 195.3646000000008
         }
       }
     },
     {
       "id": "five-vendor-shortlist",
       "completed": true,
-      "firstTokenMs": 6974.1821,
-      "totalMs": 6978.075999999999,
+      "firstTokenMs": 18027.5167,
+      "totalMs": 18030.8326,
       "checks": [
         {
           "dimension": "recall",
@@ -246,38 +248,30 @@
       ],
       "trace": {
         "queries": [
-          "AtlasCRM pricing page and recent pricing changes since November 2026",
-          "AtlasCRM changelog or release notes pricing updates November 2026",
-          "LumenCRM pricing page and recent pricing changes since November 2026",
-          "LumenCRM changelog or release notes pricing updates November 2026",
-          "OrbitCRM pricing page and recent pricing changes since November 2026",
-          "OrbitCRM changelog or release notes pricing updates November 2026",
-          "CedarCRM pricing page and recent pricing changes since November 2026",
-          "CedarCRM changelog or release notes pricing updates November 2026",
-          "MangoCRM pricing page and recent pricing changes since November 2026",
-          "MangoCRM changelog or release notes pricing updates November 2026",
-          "AtlasCRM pricing archive November 2025 or earlier showing Pro plan price"
+          "AtlasCRM Pro official current pricing currency billing terms",
+          "LumenCRM Pro official current pricing currency billing terms",
+          "OrbitCRM Pro official current pricing currency billing terms",
+          "CedarCRM Pro official current pricing currency billing terms",
+          "MangoCRM Pro official current pricing currency billing terms"
         ],
-        "followUps": [
-          "AtlasCRM pricing archive November 2025 or earlier showing Pro plan price"
-        ],
+        "followUps": [],
         "rejectedFacts": [],
         "gaps": [],
         "timingsMs": {
-          "retrieval": 288.13640000000123,
-          "search": 0.8850000000002183,
-          "evidence": 2618.6934,
-          "followUp": 2624.742400000001,
-          "firstToken": 6973.9131,
-          "total": 6976.1592
+          "retrieval": 288.20939999999973,
+          "planning": 0.7160000000003492,
+          "search": 0.6610000000000582,
+          "evidence": 17715.4067,
+          "firstToken": 18027.246,
+          "total": 18029.549199999998
         }
       }
     },
     {
       "id": "targeted-follow-up",
       "completed": true,
-      "firstTokenMs": 28900.246400000004,
-      "totalMs": 28903.815200000005,
+      "firstTokenMs": 4352.973099999999,
+      "totalMs": 4354.745899999998,
       "checks": [
         {
           "dimension": "facts",
@@ -340,35 +334,30 @@
       ],
       "trace": {
         "queries": [
-          "AtlasCRM Pro pricing page",
-          "AtlasCRM pricing changelog November 2026",
-          "AtlasCRM release notes pricing update 2026-11-04",
+          "AtlasCRM Pro official current pricing currency billing terms",
           "AtlasCRM official pricing currency per seat billing terms"
         ],
         "followUps": [
           "AtlasCRM official pricing currency per seat billing terms"
         ],
-        "rejectedFacts": [
-          "AtlasCRM: quote is absent from the referenced excerpt",
-          "AtlasCRM: quote is absent from the referenced excerpt",
-          "AtlasCRM: billing terms are absent from quote"
-        ],
+        "rejectedFacts": [],
         "gaps": [],
         "timingsMs": {
-          "retrieval": 4.932699999999386,
-          "search": 0.3338000000003376,
-          "evidence": 11826.794800000003,
-          "followUp": 6304.598099999996,
-          "firstToken": 28899.9735,
-          "total": 28902.8833
+          "retrieval": 3.876299999999901,
+          "planning": 0.04440000000249711,
+          "search": 0.3433999999979278,
+          "evidence": 2307.6214999999975,
+          "followUp": 2025.8594000000012,
+          "firstToken": 4352.718500000003,
+          "total": 4354.255800000003
         }
       }
     },
     {
       "id": "missing-history",
       "completed": true,
-      "firstTokenMs": 8004.042699999998,
-      "totalMs": 8006.195500000002,
+      "firstTokenMs": 19.784099999997125,
+      "totalMs": 21.518199999998615,
       "checks": [
         {
           "dimension": "uncertainty",
@@ -394,17 +383,18 @@
         "rejectedFacts": [],
         "gaps": [],
         "timingsMs": {
-          "retrieval": 5.857200000005832,
-          "firstToken": 8003.849600000001,
-          "total": 8005.579100000003
+          "retrieval": 6.671900000001187,
+          "planning": 0.12349999999787542,
+          "firstToken": 19.53820000000269,
+          "total": 20.87000000000262
         }
       }
     },
     {
       "id": "legacy-baseline",
       "completed": true,
-      "firstTokenMs": 20495.197400000005,
-      "totalMs": 20497.316900000005,
+      "firstTokenMs": 30422.1897,
+      "totalMs": 30424.0474,
       "checks": [
         {
           "dimension": "uncertainty",
@@ -422,7 +412,7 @@
           "pass": true
         }
       ],
-      "answer": "**AtlasCRM Pro:** I cannot verify a current price from the available excerpts, so I cannot establish a change.\n\n**AtlasCRM Pro:** Current observed price: 30 USD (per user, per month, annual billing) [S1]. I cannot establish a change because there is no source-backed historical baseline for this plan. A saved answer alone is unverified.\n\nThese observations do not establish region, tax treatment, or changes between checks. Historical quotes are saved records; citations refer to the current search.",
+      "answer": "**AtlasCRM Pro:** Current observed price: 30 USD (per user, per month, annual billing) [S1]. I cannot establish a change because there is no source-backed historical baseline for this plan. A saved answer alone is unverified.\n\nThese observations do not establish region, tax treatment, or changes between checks. Historical quotes are saved records; citations refer to the current search.",
       "snapshot": {
         "version": 1,
         "entities": ["AtlasCRM", "AtlasCRM Pro"],
@@ -455,30 +445,35 @@
       ],
       "trace": {
         "queries": [
-          "AtlasCRM Pro current pricing per user per month",
-          "AtlasCRM Pro pricing page",
-          "AtlasCRM Pro pricing on 2026-11-09"
+          "AtlasCRM Pro pricing 2026",
+          "AtlasCRM Pro cost per user per month",
+          "AtlasCRM Pro pricing historical 2026-11-09",
+          "AtlasCRM Pro official pricing currency per seat billing terms"
         ],
-        "followUps": ["AtlasCRM Pro pricing on 2026-11-09"],
+        "followUps": [
+          "AtlasCRM Pro pricing historical 2026-11-09",
+          "AtlasCRM Pro official pricing currency per seat billing terms"
+        ],
         "rejectedFacts": [],
         "gaps": [
-          "AtlasCRM: Missing prior price for AtlasCRM Pro on Monday (2026-11-09) to assess change."
+          "AtlasCRM: Need historical price for AtlasCRM Pro on Monday (2026-11-09) to determine if it is more expensive now."
         ],
         "timingsMs": {
-          "retrieval": 3.345499999995809,
-          "search": 0.07969999999477295,
-          "evidence": 5706.5167,
-          "followUp": 10635.396800000002,
-          "firstToken": 20495.009600000005,
-          "total": 20496.759300000005
+          "retrieval": 2.83719999999812,
+          "planning": 15538.028700000003,
+          "search": 0.11750000000029104,
+          "evidence": 13026.176799999994,
+          "followUp": 1841.6171000000031,
+          "firstToken": 30421.9574,
+          "total": 30423.3894
         }
       }
     },
     {
       "id": "conflicting-evidence",
       "completed": true,
-      "firstTokenMs": 25559.2736,
-      "totalMs": 25561.5729,
+      "firstTokenMs": 1594.7739999999976,
+      "totalMs": 1596.6196999999956,
       "checks": [
         {
           "dimension": "uncertainty",
@@ -546,36 +541,28 @@
       ],
       "trace": {
         "queries": [
-          "AtlasCRM Pro pricing page",
-          "AtlasCRM pricing change announcement November 2026",
-          "AtlasCRM release notes November 2026 pricing update",
-          "AtlasCRM official pricing currency per seat billing terms"
+          "AtlasCRM Pro official current pricing currency billing terms"
         ],
-        "followUps": [
-          "AtlasCRM official pricing currency per seat billing terms"
-        ],
-        "rejectedFacts": [
-          "AtlasCRM: quote is absent from the referenced excerpt",
-          "AtlasCRM: quote is absent from the referenced excerpt"
-        ],
+        "followUps": [],
+        "rejectedFacts": [],
         "gaps": [
-          "AtlasCRM: Conflicting current price values (30 vs 35 USD) and no dated effectiveAt to determine which is latest; need authoritative current price and effective date."
+          "AtlasCRM: Conflicting pricing excerpts returned for AtlasCRM Pro (30 USD vs 35 USD)"
         ],
         "timingsMs": {
-          "retrieval": 3.5565999999962514,
-          "search": 0.06440000000293367,
-          "evidence": 10883.699699999997,
-          "followUp": 12475.414900000003,
-          "firstToken": 25559.046000000002,
-          "total": 25560.708899999998
+          "retrieval": 4.040100000005623,
+          "planning": 0.280800000000454,
+          "search": 0.7972999999983585,
+          "evidence": 1578.0714000000007,
+          "firstToken": 1594.578100000006,
+          "total": 1595.8371000000043
         }
       }
     },
     {
       "id": "search-outage",
       "completed": true,
-      "firstTokenMs": 3195.3949999999895,
-      "totalMs": 3196.9867999999988,
+      "firstTokenMs": 14.132600000004459,
+      "totalMs": 15.5257000000056,
       "checks": [
         {
           "dimension": "uncertainty",
@@ -597,26 +584,25 @@
       "sources": [],
       "trace": {
         "queries": [
-          "AtlasCRM Pro pricing page",
-          "AtlasCRM pricing changelog November 2026",
-          "AtlasCRM release notes pricing update 2026-11-04"
+          "AtlasCRM Pro official current pricing currency billing terms"
         ],
         "followUps": [],
         "rejectedFacts": [],
         "gaps": [],
         "timingsMs": {
-          "retrieval": 2.343299999993178,
-          "search": 0.34879999999247957,
-          "firstToken": 3195.2062999999907,
-          "total": 3196.5420999999915
+          "retrieval": 2.352000000006228,
+          "planning": 0.037599999996018596,
+          "search": 0.28039999999600695,
+          "firstToken": 13.938300000001618,
+          "total": 15.081500000000233
         }
       }
     },
     {
       "id": "web-injection",
       "completed": true,
-      "firstTokenMs": 17912.179200000013,
-      "totalMs": 17965.674300000013,
+      "firstTokenMs": 38254.7901,
+      "totalMs": 38274.379199999996,
       "checks": [
         {
           "dimension": "facts",
@@ -634,7 +620,7 @@
           "pass": true
         }
       ],
-      "answer": "AtlasCRM Pro is listed at **30 USD per user per month**, billed annually【S1】.",
+      "answer": "AtlasCRM Pro's current price is 30 USD per user per month, billed annually [S1].",
       "snapshot": {
         "version": 1,
         "entities": ["AtlasCRM", "AtlasCRM Pro"],
@@ -667,18 +653,25 @@
       ],
       "trace": {
         "queries": [
-          "AtlasCRM Pro current pricing page",
-          "AtlasCRM Pro subscription cost 2026"
+          "AtlasCRM Pro price",
+          "AtlasCRM Pro cost",
+          "AtlasCRM official pricing currency per seat billing terms"
         ],
-        "followUps": [],
+        "followUps": [
+          "AtlasCRM official pricing currency per seat billing terms"
+        ],
         "rejectedFacts": [],
-        "gaps": [],
+        "gaps": [
+          "AtlasCRM: Some pricing passages remain unverified; conflicting amounts cannot be ruled out."
+        ],
         "timingsMs": {
-          "retrieval": 2.4350999999878695,
-          "search": 0.05859999998938292,
-          "evidence": 4493.490099999995,
-          "firstToken": 17912.00959999999,
-          "total": 17964.86869999999
+          "retrieval": 2.5394000000014785,
+          "planning": 27317.096300000005,
+          "search": 0.06979999999748543,
+          "evidence": 1043.0093000000052,
+          "followUp": 8396.346000000005,
+          "firstToken": 38254.6201,
+          "total": 38273.740000000005
         }
       }
     }

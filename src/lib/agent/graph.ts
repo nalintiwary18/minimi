@@ -3,7 +3,7 @@ import { SystemMessage, HumanMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { DateTime } from "luxon";
 import { modelSettings } from "../server/config";
-import { createModel } from "./model";
+import { createModel, structuredOutput } from "./model";
 import { retrieve } from "../server/db";
 import { timeContext } from "./time";
 import { makeWebSearch } from "./search";
@@ -154,30 +154,32 @@ export async function runAgent(
     }));
     const raw = await waitForProvider(
       () =>
-        createModel(
-          // Reserve enough for every vendor, without charging a one-vendor
-          // request the same quota estimate as a ten-vendor comparison.
-          Math.min(
-            3000,
-            1100 + Math.max(0, (state.plan.entities?.length || 1) - 1) * 350,
+        structuredOutput(
+          createModel(
+            // Reserve enough for every vendor, without charging a one-vendor
+            // request the same quota estimate as a ten-vendor comparison.
+            Math.min(
+              3000,
+              1100 + Math.max(0, (state.plan.entities?.length || 1) - 1) * 350,
+            ),
           ),
-        )
-          .withStructuredOutput(Assessment, { name: "evidence_assessment" })
-          .invoke(
-            [
-              new SystemMessage(ASSESS_PROMPT),
-              new HumanMessage(
-                packContext({
-                  clock,
-                  question: input.question,
-                  memory: evidenceMemory,
-                  targets: state.plan,
-                  currentSources: state.sources,
-                }),
-              ),
-            ],
-            { signal },
-          ),
+          Assessment,
+          "evidence_assessment",
+        ).invoke(
+          [
+            new SystemMessage(ASSESS_PROMPT),
+            new HumanMessage(
+              packContext({
+                clock,
+                question: input.question,
+                memory: evidenceMemory,
+                targets: state.plan,
+                currentSources: state.sources,
+              }),
+            ),
+          ],
+          { signal },
+        ),
       signal,
       waiting,
     );
@@ -332,9 +334,7 @@ export async function runAgent(
           };
         }
       }
-      const planner = plannerModel.withStructuredOutput(Plan, {
-        name: "answer_plan",
-      });
+      const planner = structuredOutput(plannerModel, Plan, "answer_plan");
       const context = (memory: Turn[]) => [
         new SystemMessage(PLAN_PROMPT),
         new HumanMessage(

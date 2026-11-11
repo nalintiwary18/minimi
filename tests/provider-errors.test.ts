@@ -6,6 +6,22 @@ import {
 } from "../src/lib/agent/provider-errors";
 afterEach(() => vi.useRealTimers());
 describe("provider throttling", () => {
+  it("retries a temporary service outage once and reports the provider", async () => {
+    vi.useFakeTimers();
+    const error = { status: 503 };
+    const operation = vi.fn().mockRejectedValue(error);
+    const result = waitForProvider(
+      operation,
+      new AbortController().signal,
+      () => {},
+    ).catch((e) => e);
+    await vi.runAllTimersAsync();
+    expect(await result).toEqual(error);
+    expect(operation).toHaveBeenCalledTimes(2);
+    expect(responseFailure(error, "Gemini")).toContain(
+      "Gemini is temporarily unavailable",
+    );
+  });
   it("reports selected-provider access and credit failures", () => {
     expect(responseFailure({ status: 402 }, "DeepSeek")).toContain(
       "DeepSeek has insufficient credit",

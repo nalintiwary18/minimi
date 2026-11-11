@@ -24,14 +24,29 @@ const checks = await Promise.allSettled([
     const response = await fetch(model.endpoint, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${required(model.keyName)}`,
+        ...(model.provider === "gemini"
+          ? { "X-goog-api-key": required(model.keyName) }
+          : { Authorization: `Bearer ${required(model.keyName)}` }),
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: model.model,
-        messages: [{ role: "user", content: "Reply with OK only." }],
-        max_tokens: 64,
-      }),
+      body: JSON.stringify(
+        model.provider === "gemini"
+          ? {
+              contents: [{ parts: [{ text: "Reply with OK only." }] }],
+              generationConfig: {
+                maxOutputTokens: 512,
+                ...(model.model.startsWith("gemini-3") ||
+                model.model.includes("latest")
+                  ? { thinkingConfig: { thinkingLevel: "LOW" } }
+                  : {}),
+              },
+            }
+          : {
+              model: model.model,
+              messages: [{ role: "user", content: "Reply with OK only." }],
+              max_tokens: 64,
+            },
+      ),
       signal: AbortSignal.timeout(20000),
     });
     return {
