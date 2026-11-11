@@ -66,7 +66,7 @@ async function chat(sessionId, question) {
   if (!complete) throw new Error("Completion event missing.");
   const persisted = await db
     .from("turns")
-    .select("status,answer")
+    .select("status,answer,memory,trace")
     .eq("owner_id", owner)
     .eq("session_id", sessionId)
     .order("created_at", { ascending: false })
@@ -78,6 +78,12 @@ async function chat(sessionId, question) {
     persisted.data.answer !== answer
   )
     throw new Error("Persistence mismatch.");
+  if (
+    persisted.data.memory?.version !== 1 ||
+    !Array.isArray(persisted.data.memory.facts) ||
+    !persisted.data.trace?.timingsMs
+  )
+    throw new Error("Structured memory or research trace was not persisted.");
   console.log(
     JSON.stringify({
       question,

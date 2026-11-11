@@ -89,6 +89,8 @@ export async function POST(request: Request) {
               result.answer,
               result.sources,
               "complete",
+              result.snapshot,
+              result.trace,
             );
           }
           emit({ type: "done", turnId: turn.id });

@@ -7,7 +7,10 @@ const client = createClient(
 );
 const checks = await Promise.allSettled([
   (async () => {
-    const result = await client.from("sessions").select("id").limit(1);
+    const result = await client
+      .from("turns")
+      .select("id,memory,trace")
+      .limit(1);
     return {
       provider: "Supabase",
       status: result.status,

@@ -50,10 +50,41 @@ export function packContext(input: Context, budget = 14500) {
         };
       }
     }
+    // Evidence capsules can be larger than excerpts. Trim quotes, never amounts,
+    // dates or billing metadata, and explicitly mark that context is incomplete.
+    const visit = (value: unknown) => {
+      if (!value || typeof value !== "object") return;
+      for (const [key, child] of Object.entries(value)) {
+        if (
+          key === "quote" &&
+          typeof child === "string" &&
+          child.length > longest
+        ) {
+          longest = child.length;
+          trim = () => {
+            (value as Record<string, unknown>)[key] = child.slice(
+              0,
+              Math.max(250, Math.floor(child.length / 2)),
+            );
+          };
+        } else if (typeof child === "object") visit(child);
+      }
+    };
+    visit(context);
     if (trim) trim();
     else if (context.memory.length > 1) context.memory.pop();
     else if ((context.currentSources?.length || 0) > 1)
       context.currentSources!.pop();
+    else if (
+      Array.isArray(context.checkedFacts) &&
+      context.checkedFacts.length > 1
+    )
+      context.checkedFacts.pop();
+    else if (
+      Array.isArray(context.comparisons) &&
+      context.comparisons.length > 1
+    )
+      context.comparisons.pop();
     else {
       // Keep the user's current question intact, even when a past turn is huge.
       const memory = context.memory[0];

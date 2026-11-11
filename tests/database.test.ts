@@ -16,6 +16,15 @@ beforeAll(async () => {
       "utf8",
     ),
   );
+  await db.exec(
+    await readFile(
+      new URL(
+        "../supabase/migrations/002_structured_memory.sql",
+        import.meta.url,
+      ),
+      "utf8",
+    ),
+  );
   await db.query("insert into sessions(id,owner_id) values($1,$2)", [
     session,
     owner,
@@ -23,6 +32,33 @@ beforeAll(async () => {
 }, 30000);
 afterAll(() => db.close());
 describe("PostgreSQL memory contract", () => {
+  it("indexes entities that are absent from the prose", async () => {
+    const sid = randomUUID();
+    await db.query("insert into sessions(id,owner_id) values($1,$2)", [
+      sid,
+      owner,
+    ]);
+    await db.query(
+      "insert into turns(owner_id,session_id,request_id,question,answer,timezone,status,memory) values($1,$2,$3,'Shortlist','Details omitted','UTC','complete',$4)",
+      [
+        owner,
+        sid,
+        randomUUID(),
+        JSON.stringify({ version: 1, entities: ["AtlasCRM"], facts: [] }),
+      ],
+    );
+    expect(
+      (await db.query("select * from recall_turns($1,'AtlasCRM')", [owner]))
+        .rows,
+    ).toHaveLength(1);
+    expect(
+      (
+        await db.query("select * from recall_turns($1,'AtlasCRM')", [
+          otherOwner,
+        ])
+      ).rows,
+    ).toHaveLength(0);
+  });
   it("admits, saves and replays a request exactly once", async () => {
     const request = randomUUID();
     const params = [

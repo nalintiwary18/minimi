@@ -1,6 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { required } from "./config";
-import type { Session, Turn, Source } from "../types";
+import type {
+  Session,
+  Turn,
+  Source,
+  MemorySnapshot,
+  ResearchTrace,
+} from "../types";
 
 function db() {
   return createClient(
@@ -15,9 +21,9 @@ function checked<T>(result: {
 }): NonNullable<T> {
   if (result.error) {
     console.error("Database operation failed:", result.error.message);
-    throw new Error(
-      "Database unavailable or a response is already running. Check Supabase or try again shortly.",
-    );
+    if (/already running/i.test(result.error.message))
+      throw new Error("A response is already running. Try again shortly.");
+    throw new Error("Database unavailable. Try again shortly.");
   }
   if (result.data === null) throw new Error("Database returned no data.");
   return result.data as NonNullable<T>;
@@ -72,15 +78,28 @@ export async function retrieve(
   start?: string,
   end?: string,
 ): Promise<Turn[]> {
-  return checked(
-    await db().rpc("recall_turns", {
-      p_owner: owner,
-      p_query: query,
-      p_start: start ?? null,
-      p_end: end ?? null,
-      p_limit: 16,
-    }),
-  );
+  const read = () =>
+    db()
+      .rpc("recall_turns", {
+        p_owner: owner,
+        p_query: query,
+        p_start: start ?? null,
+        p_end: end ?? null,
+        p_limit: 16,
+      })
+      .abortSignal(AbortSignal.timeout(8000));
+  let result = await read();
+  // A transport failure must not turn an available memory into invented history.
+  // Retry this read once; never replay ambiguous writes here.
+  if (
+    result.error &&
+    (/fetch failed|network|timeout|abort/i.test(result.error.message) ||
+      result.status >= 500)
+  ) {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    result = await read();
+  }
+  return checked(result);
 }
 export async function beginTurn(
   owner: string,
@@ -105,11 +124,19 @@ export async function finishTurn(
   answer: string,
   sources: Source[],
   status: "complete" | "error",
+  memory?: MemorySnapshot,
+  trace?: ResearchTrace,
 ) {
   checked(
     await db()
       .from("turns")
-      .update({ answer, sources, status })
+      .update({
+        answer,
+        sources,
+        status,
+        ...(memory ? { memory } : {}),
+        ...(trace ? { trace } : {}),
+      })
       .eq("owner_id", owner)
       .eq("id", id)
       .eq("status", "pending")
