@@ -58,4 +58,3 @@ Tests use mocked providers and local PostgreSQL WASM. No API keys needed. For li
 Memory survives restarts and spans conversations in the same browser. Clearing cookies creates a new workspace. Stored UTC timestamps and turn timezones support “on 3 November” and “last Tuesday.” Historical answers are baselines to recheck, not trusted current facts. Failed questions are saved too. The history display shows the latest 100 turns; agent recall and excerpts have context budgets.
 
 Before public hosting, add Supabase Auth, account quotas, retention/deletion, and deployment-specific origin/proxy configuration. Per-owner throttling is not distributed abuse protection. No live quality or latency benchmark has been measured.
-
