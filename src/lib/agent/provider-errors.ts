@@ -54,12 +54,14 @@ export async function waitForProvider<T>(
   }
 }
 
-export function responseFailure(error: unknown) {
+export function responseFailure(error: unknown, provider = "Groq") {
   if (isRateLimit(error))
-    return "Groq's usage limit was reached. Wait about a minute, then send your question again. Your question is saved.";
+    return `${provider}'s usage limit was reached. Try again when the provider quota is available. Your question is saved.`;
   const value = error as { status?: number; message?: string };
   if (value?.status === 401 || value?.status === 403)
-    return "The model provider rejected access. Check the Groq key. Your question is saved.";
+    return `The model provider rejected access. Check the ${provider} key. Your question is saved.`;
+  if (value?.status === 402)
+    return `${provider} has insufficient credit. Add credit in the provider account, then try again. Your question is saved.`;
   if (/abort|timeout/i.test(value?.message || ""))
     return "The response timed out. Try again with a shorter question. Your question is saved.";
   return "The response could not finish. Please try again. Your question is saved.";

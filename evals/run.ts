@@ -4,14 +4,15 @@ import { PGlite } from "@electric-sql/pglite";
 import { runAgent } from "../src/lib/agent/graph";
 import { cases, NOW } from "./dataset";
 import type { Turn } from "../src/lib/types";
+import { modelSettings, required } from "../src/lib/server/config";
 
 const selected = process.argv
   .find((arg) => arg.startsWith("--case="))
   ?.slice(7);
 const targets = selected ? cases.filter((c) => c.id === selected) : cases;
 if (!targets.length) throw new Error(`Unknown case: ${selected}`);
-if (!process.env.GROQ_API_KEY)
-  throw new Error("GROQ_API_KEY is needed for the model evaluation.");
+const model = modelSettings();
+required(model.keyName);
 const db = new PGlite();
 const owner = randomUUID();
 const results: Record<string, unknown>[] = [];
@@ -164,8 +165,9 @@ const report = {
   datasetVersion: 2,
   ranAt: new Date().toISOString(),
   clock: NOW,
-  model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-  mode: "real Groq, recorded web, real local PostgreSQL",
+  model: model.model,
+  provider: model.provider,
+  mode: `real ${model.label}, recorded web, real local PostgreSQL`,
   completed: results.filter((r) => r.completed).length,
   count: results.length,
   scores,

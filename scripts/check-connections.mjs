@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import { modelSettings, required } from "../src/lib/server/config.ts";
+const model = modelSettings();
 
 const client = createClient(
   process.env.SUPABASE_URL,
@@ -19,23 +21,24 @@ const checks = await Promise.allSettled([
     };
   })(),
   (async () => {
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-          messages: [{ role: "user", content: "Reply with OK only." }],
-          max_tokens: 64,
-        }),
-        signal: AbortSignal.timeout(20000),
+    const response = await fetch(model.endpoint, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${required(model.keyName)}`,
+        "Content-Type": "application/json",
       },
-    );
-    return { provider: "Groq", status: response.status, ready: response.ok };
+      body: JSON.stringify({
+        model: model.model,
+        messages: [{ role: "user", content: "Reply with OK only." }],
+        max_tokens: 64,
+      }),
+      signal: AbortSignal.timeout(20000),
+    });
+    return {
+      provider: model.label,
+      status: response.status,
+      ready: response.ok,
+    };
   })(),
   (async () => {
     const response = await fetch("https://api.tavily.com/search", {

@@ -3,7 +3,7 @@ import { beginTurn, finishTurn, history, ownedSession } from "@/lib/server/db";
 import { checkOrigin, ownerId } from "@/lib/server/identity";
 import { runAgent } from "@/lib/agent/graph";
 import { validZone } from "@/lib/agent/time";
-import { required } from "@/lib/server/config";
+import { required, modelSettings } from "@/lib/server/config";
 import { responseFailure } from "@/lib/agent/provider-errors";
 import type { StreamEvent } from "@/lib/types";
 export const runtime = "nodejs";
@@ -20,7 +20,8 @@ export async function POST(request: Request) {
     if (Number(request.headers.get("content-length")) > 40000)
       return Response.json({ error: "Message too large." }, { status: 413 });
     const input = Input.parse(await request.json());
-    required("GROQ_API_KEY");
+    const model = modelSettings();
+    required(model.keyName);
     required("TAVILY_API_KEY");
     const owner = await ownerId();
     await ownedSession(owner, input.sessionId);
@@ -106,7 +107,7 @@ export async function POST(request: Request) {
           }
           emit({
             type: "error",
-            text: responseFailure(error),
+            text: responseFailure(error, model.label),
           });
         } finally {
           if (!closed) {

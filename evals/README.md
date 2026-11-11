@@ -1,8 +1,8 @@
 # Repeatable temporal evaluation
 
-Run `npm run eval` after configuring `GROQ_API_KEY` in `.env.local`. This makes paid Groq calls. It needs no running app, Tavily key or hosted Supabase database: web evidence and the clock are fixed, and local PostgreSQL runs the actual production migrations and retrieval function. It never reads or deletes your saved conversations.
+Run `npm run eval` after configuring the selected provider's key in `.env.local`. This makes paid model calls. It needs no running app, Tavily key or hosted Supabase database: web evidence and the clock are fixed, and local PostgreSQL runs the actual production migrations and retrieval function. It never reads or deletes your saved conversations.
 
-`npm run eval -- --case=targeted-follow-up` selects one case. The same production graph accepts injected search/repository adapters only through server-side code, never HTTP parameters. The model is real, not mocked. `dataset.ts` is the versioned dataset and ground truth; fictional vendors and .example URLs prevent synthetic prices being mistaken for real ones.
+`npm run eval -- --case=targeted-follow-up` selects one case. The same production graph accepts injected search/repository adapters only through server-side code, never HTTP parameters. The selected Groq or DeepSeek model is real, not mocked. `dataset.ts` is the versioned dataset and ground truth; fictional vendors and .example URLs prevent synthetic prices being mistaken for real ones.
 
 Cases cover dated recall, a long five-vendor shortlist, incomplete billing terms requiring follow-up, missing history, a legacy unverified answer, conflicting prices, a search outage, and instructions hidden in a web excerpt.
 

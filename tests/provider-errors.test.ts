@@ -6,6 +6,17 @@ import {
 } from "../src/lib/agent/provider-errors";
 afterEach(() => vi.useRealTimers());
 describe("provider throttling", () => {
+  it("reports selected-provider access and credit failures", () => {
+    expect(responseFailure({ status: 402 }, "DeepSeek")).toContain(
+      "DeepSeek has insufficient credit",
+    );
+    expect(responseFailure({ status: 401 }, "DeepSeek")).toContain(
+      "DeepSeek key",
+    );
+    expect(responseFailure({ status: 429 }, "DeepSeek")).toContain(
+      "DeepSeek's usage limit",
+    );
+  });
   it("honors the real cooldown format reported by Groq", () => {
     expect(
       cooldownMs({

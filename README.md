@@ -1,19 +1,22 @@
 # Recall
 
-Next.js + LangGraph + Groq + Supabase, with **one external tool: web search**.
+Next.js + LangGraph + Groq or DeepSeek + Supabase, with **one external tool: web search**.
 
 ## Run locally
 
 Requires Node.js 22.17+ and npm. Create a Supabase project and run [001_memory.sql](supabase/migrations/001_memory.sql), then [002_structured_memory.sql](supabase/migrations/002_structured_memory.sql) in its SQL Editor. Existing projects only need 002; it preserves their history. Copy `.env.example` to `.env.local`, then fill in:
 
-| Variable                    | Where to get it                                                            |
-| --------------------------- | -------------------------------------------------------------------------- |
-| `GROQ_API_KEY`              | [Groq Console](https://console.groq.com/keys)                              |
-| `GROQ_MODEL`                | Default: `openai/gpt-oss-120b`; choose a Groq chat model with tool calling |
-| `TAVILY_API_KEY`            | [Tavily](https://app.tavily.com/)                                          |
-| `SUPABASE_URL`              | Supabase project settings → API                                            |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase project settings → API → service role secret                      |
-| `SESSION_SECRET`            | Random secret of at least 32 characters; command in `.env.example`         |
+| Variable                    | Where to get it                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `GROQ_API_KEY`              | [Groq Console](https://console.groq.com/keys)                                       |
+| `GROQ_MODEL`                | Default: `openai/gpt-oss-120b`; choose a Groq chat model with tool calling          |
+| `LLM_PROVIDER`              | `groq` or `deepseek`; only the selected provider needs a key                        |
+| `DEEPSEEK_API_KEY`          | [DeepSeek Platform](https://platform.deepseek.com/)                                 |
+| `DEEPSEEK_MODEL`            | Default: `deepseek-flash`; configurable, including `deepseek-v4-pro` when available |
+| `TAVILY_API_KEY`            | [Tavily](https://app.tavily.com/)                                                   |
+| `SUPABASE_URL`              | Supabase project settings → API                                                     |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase project settings → API → service role secret                               |
+| `SESSION_SECRET`            | Random secret of at least 32 characters; command in `.env.example`                  |
 
 ```sh
 npm install
@@ -21,6 +24,8 @@ npm run dev
 ```
 
 Open [localhost:3000](http://localhost:3000). Without credentials, the interface loads and explains the missing setup. Paid chat requires configured providers. Never commit `.env.local` or share the service-role key. The UI uses your browser timezone.
+
+For DeepSeek, set `LLM_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, and `DEEPSEEK_MODEL=deepseek-flash`. The same graph supports planning, evidence extraction and streaming with either provider. A DeepSeek key can be valid while chat returns HTTP 402: add credit in the provider account. Provider switching never adds another agent tool.
 
 ## Folder structure
 
@@ -49,7 +54,7 @@ npm test
 npm run build
 ```
 
-Tests use mocked providers and local PostgreSQL WASM. No API keys needed. Run `npm run eval` with a Groq key for eight fixed temporal scenarios. It uses the production graph, recorded fictional web evidence, and local PostgreSQL; it never touches your saved conversations. It scores expected facts, recall, uncertainty and evidence checks, and reports first-token/total latency. Review [the evaluation guide](evals/README.md) and [measured results](evals/RESULTS.md); these narrow checks cannot establish general factual accuracy.
+Tests use mocked providers and local PostgreSQL WASM. No API keys needed. Run `npm run eval` with the selected provider's key for eight fixed temporal scenarios. It uses the production graph, recorded fictional web evidence, and local PostgreSQL; it never touches your saved conversations. It scores expected facts, recall, uncertainty and evidence checks, and reports first-token/total latency. Review [the evaluation guide](evals/README.md) and [measured results](evals/RESULTS.md); these narrow checks cannot establish general factual accuracy.
 
 `npm run check:connections` checks the three providers and database migration readiness. With the app running, `npm run test:live` checks a greeting, real web search, persistence of answers/facts/traces, and recall across conversations in a disposable workspace. Both use real credentials and provider calls.
 

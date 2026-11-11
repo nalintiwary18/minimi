@@ -1,9 +1,9 @@
 import { Annotation, StateGraph, START, END } from "@langchain/langgraph";
-import { ChatGroq } from "@langchain/groq";
 import { SystemMessage, HumanMessage } from "@langchain/core/messages";
 import { z } from "zod";
 import { DateTime } from "luxon";
-import { required } from "../server/config";
+import { modelSettings } from "../server/config";
+import { createModel } from "./model";
 import { retrieve } from "../server/db";
 import { timeContext } from "./time";
 import { makeWebSearch } from "./search";
@@ -91,28 +91,12 @@ export async function runAgent(
     followUps: string[] = [];
   const recall = dependencies?.retrieve || retrieve;
   const clock = timeContext(input.question, input.timezone, input.now);
-  const llm = new ChatGroq({
-    apiKey: required("GROQ_API_KEY"),
-    model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-    temperature: 0,
-    maxTokens: 1400,
-    reasoningEffort: "low",
-    maxRetries: 0,
-    timeout: 30000,
-  });
-  const plannerModel = new ChatGroq({
-    apiKey: required("GROQ_API_KEY"),
-    model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-    temperature: 0,
-    maxTokens: 700,
-    reasoningEffort: "low",
-    maxRetries: 0,
-    timeout: 30000,
-  });
+  const llm = createModel(1400);
+  const plannerModel = createModel(700);
   const waiting = (seconds: number) =>
     emit({
       type: "status",
-      text: `Groq is busy. Retrying in ${seconds} seconds`,
+      text: `${modelSettings().label} is busy. Retrying in ${seconds} seconds`,
     });
   const tool = makeWebSearch(signal);
   const search =
@@ -170,20 +154,14 @@ export async function runAgent(
     }));
     const raw = await waitForProvider(
       () =>
-        new ChatGroq({
-          apiKey: required("GROQ_API_KEY"),
-          model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-          temperature: 0,
+        createModel(
           // Reserve enough for every vendor, without charging a one-vendor
           // request the same quota estimate as a ten-vendor comparison.
-          maxTokens: Math.min(
+          Math.min(
             3000,
             1100 + Math.max(0, (state.plan.entities?.length || 1) - 1) * 350,
           ),
-          reasoningEffort: "low",
-          maxRetries: 0,
-          timeout: 30000,
-        })
+        )
           .withStructuredOutput(Assessment, { name: "evidence_assessment" })
           .invoke(
             [
