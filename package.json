@@ -9,10 +9,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "eval": "node --env-file=.env.local --import tsx evals/run.ts",
-    "check:connections": "node --env-file=.env.local --import tsx scripts/check-connections.mjs",
-    "test:live": "node --env-file=.env.local scripts/smoke-chat.mjs",
-    "format": "prettier --write src tests scripts evals *.json next.config.ts",
-    "format:check": "prettier --check src tests scripts evals *.json next.config.ts"
+    "test:live": "node --env-file=.env.local evals/live.mjs",
+    "format": "prettier --write src tests evals *.json next.config.ts",
+    "format:check": "prettier --check src tests evals *.json next.config.ts"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.3.0",

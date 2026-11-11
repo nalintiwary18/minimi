@@ -5,3 +5,6 @@ node_modules/
 *.tsbuildinfo
 coverage/
 evals/latest-report.json
+evals/RESULTS.json
+/scripts/
+/AGENTS.md
