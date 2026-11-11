@@ -59,6 +59,3 @@ Memory survives restarts and spans conversations in the same browser. Clearing c
 
 Before public hosting, add Supabase Auth, account quotas, retention/deletion, and deployment-specific origin/proxy configuration. Per-owner throttling is not distributed abuse protection. No live quality or latency benchmark has been measured.
 
-## Submission
-
-Repository: [nalintiwary18/minimi](https://github.com/nalintiwary18/minimi). Submit that repository URL through [the application form](https://binary.so/YIrD8L5). The architecture and tradeoffs are described in `DESIGN.md`.
